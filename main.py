@@ -29,9 +29,11 @@ print "I edited this file"
 print "Brandon edited it too! Git is working :)"
 """
 
-p = Page("http://www.spsu.edu")
-p.request() # Does the request.
+urls = ['http://spsu.edu', 'http://google.com','http://baidu.com','http://sadsafioasf.com']
 
-print dir(p._request)
-print "Is page missing? %s" % str(p.isMissing())
+for url in urls:
+    p = Page(url)
+    p.request() # Does the request.
+    
+    print "Is page missing? %s" % str(p.isMissing())
 

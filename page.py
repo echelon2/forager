@@ -19,15 +19,18 @@ class Page(object):
 		if self.fetched:
 			return
 
-		r = requests.get(self.url)
-		self.httpCode = r.status_code
-		self.mimeType = r.headers['content-type']
-		self._request = r # Cache requests object (for now)
-
+		try:
+			r = requests.get(self.url)
+			self.httpCode = r.status_code
+			self.mimeType = r.headers['content-type']
+			self._request = r # Cache requests object (for now)
+		except:
+			self.httpCode = 0
+			
 	def isMissing(self):
 		"""
 		If the HTTP status code is 404, the page is missing.
 		In the future, we'll consider other error codes and timeouts.
 		"""
-		return self.httpCode is 404
+		return self.httpCode is 404 or self.httpCode is 0
 
