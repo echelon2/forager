@@ -19,7 +19,7 @@ class Page(object):
 		if self.fetched:
 			return
 
-		r = requests.get("http://www.spsu.edu")
+		r = requests.get(self.url)
 		self.httpCode = r.status_code
 		self.mimeType = r.headers['content-type']
 		self._request = r # Cache requests object (for now)
