@@ -33,7 +33,7 @@ urls = ['http://spsu.edu', 'http://google.com','http://baidu.com','http://sadsaf
 for url in urls:
     p = Page(url)
     p.request() # Does the request.
-    
+ 
     print "Is page missing? %s" % str(p.isMissing())
 """
 All_Documents = {}
