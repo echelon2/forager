@@ -92,7 +92,7 @@ IT'LL ONLY RUN IF THIS FILE IS EXECUTED DIRECTLY.
 """
 if __name__ == '__main__':
 	#try:
-	p = Document('http://google.com')
+	p = Document('http://spsu.edu')
 	p.download()
 	p.getUrls()
 	for url in p.getUrls():
