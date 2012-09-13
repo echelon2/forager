@@ -27,7 +27,6 @@ print dir(r)
 print r.content
 print "I edited this file"
 print "Brandon edited it too! Git is working :)"
-"""
 
 urls = ['http://spsu.edu', 'http://google.com','http://baidu.com','http://sadsafioasf.com']
 
@@ -36,4 +35,19 @@ for url in urls:
     p.request() # Does the request.
     
     print "Is page missing? %s" % str(p.isMissing())
+"""
+All_Documents = {}
+Unvisited_Queue = []
+Unvisited_Queue.append("spsu.edu")
 
+while len(Unvisited_Queue) > 0:
+    url = Unvisited_Queue.pop(0)
+    
+    p=Page(url)
+    p.download()
+    All_Documents[url]=p
+    urls = p.getUrls()
+    for u in urls:
+        if u not in All_Documents:
+            Unvisited_Queue.append(u)
+            
