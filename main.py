@@ -11,6 +11,8 @@ print page
 print res
 """
 
+print "Hi"
+
 # Python Standard Library
 # (None yet)
 
