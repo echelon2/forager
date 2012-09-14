@@ -18,7 +18,7 @@ print res
 import requests
 
 # Our code
-from page import *
+from document import *
 
 """
 r = requests.get("http://www.spsu.edu")
