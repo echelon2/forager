@@ -8,39 +8,57 @@ from lxml import etree
 from lxml.cssselect import CSSSelector
 from lxml.etree import fromstring
 
+# Our libraries
+from url import Url
+
 class Document(object):
 
 	def __init__(self, url=None):
 
-		self.url = url
-		self.title = None	 # Parsed out html title
-		self.httpCode = None # HTTP status code
-		self.mimeType = None # Document type (html, jpeg, css, etc.)
+		if type(url) is str:
+			url = Url(url)
+		elif type(url) is not Url:
+			raise Exception, 'Must supply Url object to Document.'
 
-		self.downloaded = False # If the page has been requested
+		self.url = url
+		self.title = None		# Parsed out html title
+		self.httpStatus = None	# HTTP status code
+		self.mimeType = None	# Document type (html, jpeg, css, etc.)
+		self.depth = -1			# Simple depth of the page from root doc
+
+		self.requested = False	# If the page has been requested
 
 		self._cachedRequest = None # Cached requests object 
 		self._cachedLinks = [] # Cached links extracted from HTML
 
 	def download(self):
-		if self.downloaded:
+		if self.requested:
 			return
-		self.downloaded = True
+
+		self.requested = True
+
+		def parseMime(ct):
+			"""
+			Simplify/extract mimetype.
+			"""
+			if 'text/html' in ct:
+				return 'text/html'
+			return ct
 
 		try:
 			r = requests.get(self.url)
-			self.httpCode = r.status_code
-			self.mimeType = r.headers['content-type']
+			self.httpStatus = r.status_code
+			self.mimeType = parseMime(r.headers['content-type'])
 			self._cachedRequest = r # Cache requests object (for now)
 		except:
-			self.httpCode = 0
+			self.httpStatus = 0
 
 	def isMissing(self):
 		"""
 		If the HTTP status code is 404, the page is missing.
 		In the future, we'll consider other error codes and timeouts.
 		"""
-		return self.httpCode is 404 or self.httpCode is 0
+		return self.httpStatus in [0, 404]
 
 	def getUrls(self):
 		"""
