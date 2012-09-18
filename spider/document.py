@@ -1,12 +1,10 @@
 
-# Python standard library
-from StringIO import StringIO
-
-# Additional Python Libraries
+# Python libs 
 import requests
 from lxml import etree
 from lxml.cssselect import CSSSelector
 from lxml.etree import fromstring
+from StringIO import StringIO
 
 # Our libraries
 from url import Url
@@ -93,7 +91,8 @@ class Document(object):
 				if href[0:4].lower() != 'http':
 					continue
 
-				links.append(href)
+				url = Url(href, self.url)
+				links.append(url)
 
 			extracted.extend(links)
 
