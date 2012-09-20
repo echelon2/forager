@@ -54,8 +54,14 @@ class Document(object):
 		except KeyboardInterrupt:
 			raise KeyboardInterrupt
 
-		#except:
-		#	self.httpStatus = 0
+		except requests.ConnectionError:
+			self.httpStatus = 0
+
+		except requests.HTTPError:
+			self.httpStatus = 0
+
+		except requests.RequestException:
+			self.httpStatus = 0
 
 	def isMissing(self):
 		"""
@@ -111,6 +117,21 @@ class Document(object):
 
 		self._cachedLinks = extracted
 		return extracted
+
+	def __getstate__(self):
+		"""Necessary for pickle"""
+		d = self.__dict__.copy()
+
+		# Unpickleable
+		del d['_cachedRequest']
+		del d['_cachedLinks']
+
+		return d
+
+	def __setstate__(self, d):
+		"""Necessary for pickle"""
+		self.__dict__.update(d)
+
 
 """
 THIS IS TEST CODE --

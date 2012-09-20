@@ -3,7 +3,10 @@
 # Python libs
 import sys
 import requests
+import pickle
+import copy
 from Queue import PriorityQueue
+from datetime import datetime
 
 # Our code
 import pypath
@@ -15,7 +18,7 @@ CONFIGURATION
 """
 
 ROOT_URL = Url('http://spsu.edu')
-
+SAVE_EVERY = 20
 
 """
 DATA STRUCTURES
@@ -42,6 +45,30 @@ class Database(dict):
 
 
 """
+Misc functions
+"""
+
+def save(obj, filename):
+	print "Saving file: %s" % filename
+	pickle.dump(obj, open(filename, 'wb'))
+
+def save_database():
+	global DB
+	fn = str(datetime.now()).replace(' ', '_')
+	save(DB, '../cache/db_' + fn + '.obj')
+
+def save_queue():
+	global RQ
+	# Can't pickle queue
+	queue = copy.copy(RQ) # XXX: Still not working
+	li = []
+	while not queue.empty():
+		li.append(queue.get_nowait())
+
+	fn = str(datetime.now()).replace(' ', '_')
+	save(li, '../cache/queue_' + fn + '.obj')
+
+"""
 GLOBALS
 Some global vars for bookkeeping.
 """
@@ -62,24 +89,23 @@ def main(url):
 	global RQ
 
 	RQ.push(url)
-	DB[url] = Document(url)
+	#DB[url] = Document(url)
 
 	try:
+		count = 0
 		while not RQ.empty():
 			url = RQ.pop()
-			doc = None
 
-			# Database entry
+			print "Url '%s' dequeued." % url
+
+			# Don't fetch again if in database.
 			if url in DB:
-				doc = DB[url]
-			else:
-				doc = Document(url)
-				DB[url] = doc
-
-			if doc.requested:
 				continue
 
-			print "Downloading %s" % url
+			doc = Document(url)
+			DB[url] = doc
+
+			print "Downloading..."
 			doc.download()
 
 			# If we just downloaded an external domain, we 
@@ -88,16 +114,21 @@ def main(url):
 				continue
 
 			urls = doc.getUrls()
+			print "%d urls parsed from page" % len(urls)
+
 			for u in urls:
 				if u not in DB:
-					DB[u] = Document(u)
-					RQ.push(u, 1)
-				elif DB[u].requested:
-					RQ.push(u, 1) # XXX: Raise priority
+					RQ.push(u, 1) # TODO: priority heuristic
+
+			count += 1
+			if count % SAVE_EVERY == 0:
+				save_database()
+				count = 1
 
 	except KeyboardInterrupt:
 		sys.exit()
 		print "Keybord Interrupt, spider terminating."
+		save_queue() # XXX This should be fixed.
 		return
 
 	except Exception as e:
