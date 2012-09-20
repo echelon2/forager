@@ -3,47 +3,39 @@
 This is the flask website that powers report viewing.
 """
 
+# Python libs
 import random
-
 from flask import Flask
+from flask import render_template
+
+# Our code
+from database import ALL_PAGES, MISSING_PAGES
+from document import Document
+from url import Url
+
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-	"""
-	This is the root page.
-	See the @app.route("/") decarator?
-	Flask is awesome.
-	"""
+@app.route('/')
+def page_index():
+	global ALL_PAGES
+	global MISSING_PAGES
 
-	simpleHtml = """
-	<h1>This is an example page</h1>
-	<hr>
-	<ul>
-		<li><a href="/mark">Mark's page</a></li>
-		<li><a href="/brandon">Brandon's page</a></li>
-		<li><a href="/sha">Sha's page</a></li>
-		<li><a href="/something">Something!?</a></li>
-	</ul>
-"""
+	print len(ALL_PAGES)
+	print len(MISSING_PAGES)
 
-	return simpleHtml
+	return render_template('index.html', all=ALL_PAGES, missing=MISSING_PAGES)
 
-@app.route("/mark")
-def mark():
-	return "This is Mark's page. Mark likes donuts."
+@app.route('/url/<urlId>')
+@app.route('/url/<urlId>/')
+def page_report(urlId):
+	global ALL_PAGES
 
-@app.route("/brandon")
-def brandon():
-	num = random.randint(1, 10)
-	return "This is Brandon's page. He likes the number %d." % num
+	urlId = int(urlId)
 
+	doc = ALL_PAGES[urlId]
 
-@app.route("/sha")
-def sha():
-	colors = ['pink', 'red', 'green', 'blue', 'yellow']
-	color = colors[random.randint(0, len(colors))]
-	return "This is Sha's page. She likes the color %s." % color
+	return render_template('url.html', doc=doc)
+
 
 if __name__ == "__main__":
     app.run()

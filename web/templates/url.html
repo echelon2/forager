@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block main %}
+
+	<h1><a href="/">Index</a> &gt; Page Report</h1>
+		
+	<h3>{{doc.url}}</h3>
+
+	{%if doc.isMissing() %}
+		Page is missing.
+	{%else%}
+		Page is OK.
+	{%endif%}
+
+{% endblock %}
