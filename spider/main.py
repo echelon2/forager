@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 # Python libs
+import sys
 import requests
 from Queue import PriorityQueue
 
 # Our code
+import pypath
 from document import Document
 from url import Url
 
@@ -59,36 +61,54 @@ def main(url):
 	global DB
 	global RQ
 
-	#if type(url) == str:
-	#	url = Url(url)
-
 	RQ.push(url)
 	DB[url] = Document(url)
 
-	while not RQ.empty():
-		url = RQ.pop()
-		doc = None
+	try:
+		while not RQ.empty():
+			url = RQ.pop()
+			doc = None
 
-		# Database entry
-		if url in DB:
-			doc = DB[url]
-		else:
-			doc = Document(url)
-			DB[url] = doc
+			# Database entry
+			if url in DB:
+				doc = DB[url]
+			else:
+				doc = Document(url)
+				DB[url] = doc
 
-		if doc.requested:
-			continue
+			if doc.requested:
+				continue
 
-		print "Downloading %s" % url
-		doc.download()
+			print "Downloading %s" % url
+			doc.download()
 
-		urls = doc.getUrls()
-		for u in urls:
-			if u not in DB:
-				DB[u] = Document(u)
-				RQ.push(u, 1)
-			elif DB[u].requested:
-				RQ.push(u, 1) # XXX: Raise priority
+			# If we just downloaded an external domain, we 
+			# don't continue to spider it.
+			if not url.isOnDomain('spsu.edu'):
+				continue
+
+			urls = doc.getUrls()
+			for u in urls:
+				if u not in DB:
+					DB[u] = Document(u)
+					RQ.push(u, 1)
+				elif DB[u].requested:
+					RQ.push(u, 1) # XXX: Raise priority
+
+	except KeyboardInterrupt:
+		sys.exit()
+		print "Keybord Interrupt, spider terminating."
+		return
+
+	except Exception as e:
+		import sys, traceback
+		print '\n---------------------'
+		print "Exception occurred in mainloop"
+		print 'Exception: %s' % e
+		print '- - - - - - - - - - -'
+		traceback.print_tb(sys.exc_info()[2])
+		print "\n"
+		pass
 
 main(ROOT_URL)
 

@@ -22,6 +22,10 @@ class Url(str):
 		absUrl = url if not base else urlparse.urljoin(base, url)
 		return str.__new__(self, absUrl)
 
+	def isOnDomain(self, domain):
+		dom = urlparse.urlparse(self)
+		return dom.netloc.endswith(domain)
+
 # TEST CODE
 if __name__ == '__main__':
 	u = Url("http://google.com")

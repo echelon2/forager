@@ -29,6 +29,9 @@ class Document(object):
 		self._cachedRequest = None # Cached requests object 
 		self._cachedLinks = [] # Cached links extracted from HTML
 
+		self.linksIn = []
+		self.linksOut = []
+
 	def download(self):
 		if self.requested:
 			return
@@ -48,8 +51,11 @@ class Document(object):
 			self.httpStatus = r.status_code
 			self.mimeType = parseMime(r.headers['content-type'])
 			self._cachedRequest = r # Cache requests object (for now)
-		except:
-			self.httpStatus = 0
+		except KeyboardInterrupt:
+			raise KeyboardInterrupt
+
+		#except:
+		#	self.httpStatus = 0
 
 	def isMissing(self):
 		"""
@@ -95,6 +101,9 @@ class Document(object):
 				links.append(url)
 
 			extracted.extend(links)
+
+		except KeyboardInterrupt:
+			raise KeyboardInterrupt
 
 		except:
 			# FIXME: Better error handling
