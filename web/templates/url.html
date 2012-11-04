@@ -5,10 +5,38 @@
 		
 	<h3>{{doc.url}}</h3>
 
-	{%if doc.isMissing() %}
-		Page is missing.
-	{%else%}
-		Page is OK.
-	{%endif%}
+	{% if doc.isMissing() %}
+		<span class="bad">
+			<p>Page is missing.</p>
+		</span>
+	{% else %}
+		<span class="good">
+			<p>Page is OK.</p>
+		</span>
+	{% endif %}
+
+	<h2>Inbound Links</h2>
+	<ul>
+	{% for d in doc.linksIn %}
+		<li><a href="/url/{{ d.cacheId}}">{{ d.url.short() }}</a></li>
+	{% endfor %}
+	</ul>
+
+	<h2>Outbound Links</h2>
+	<ul>
+	{% for d in doc.linksOut %}
+		{% if d.isMissing() %}
+			<li class="bad">
+		{% else %}
+			<li class="good">
+		{% endif %}
+		{% if d.cacheId %}
+			<a href="/url/{{ d.cacheId }}">{{ d.url.short() }}</a>
+		{% else %}
+			{{ d.url.short() }}
+		{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
 
 {% endblock %}

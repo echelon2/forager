@@ -1,0 +1,79 @@
+body {
+	background-color: #eee;
+	color: #111;
+	font-family: "Ubuntu", arial;
+	margin: 0px;
+	padding: 0px;
+	overflow-x: hidden;
+	background-image: -ms-radial-gradient(center, 
+		ellipse farthest-corner, #fff 0%, #eee 100%);
+	background-image: -moz-radial-gradient(center, 
+		ellipse farthest-corner, #fff 0%, #eee 100%);
+	background-image: -o-radial-gradient(center, 
+		ellipse farthest-corner, #fff 0%, #eee 100%);
+	background-image: -webkit-gradient(radial, center center, 0, 
+		center center, 448, color-stop(0, #fff), color-stop(1, #eee));
+	background-image: -webkit-radial-gradient(center, 
+		ellipse farthest-corner, #aaa 0%, #ddd 100%);
+	background-image: radial-gradient(ellipse farthest-corner 
+		at center, #fff 0%, #eee 100%);
+}
+
+
+h1, h2, h3, h4 {
+	padding: 0px;
+	margin: 0px;
+	font-family: "Ubuntu Light";
+}
+
+a {
+	color: #06d;
+}
+
+.good {
+	color: #0a0;
+}
+.bad {
+	color: #a00;
+}
+
+.good a {
+	color: #0a0;
+}
+.bad a {
+	color: #a00;
+}
+
+
+
+
+.goodbg {
+	background-color: #0a0;
+}
+.badbg {
+	background-color: #a00;
+}
+
+table {
+	width: 90%;
+	margin: auto;
+}
+
+#main {
+	margin: auto;
+	max-width: 800px;
+	min-height: 100%;
+}
+#main2 {
+	margin: 26px 0px 0px 0px;
+	padding: 15px 20px 20px 20px;
+	font-family: "Ubuntu", arial;
+	text-align: justify;
+	color: #111;
+	background-color: rgba(240, 240, 255, 0.8);
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	border-radius: 25px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.55);
+}
+

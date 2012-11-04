@@ -26,6 +26,13 @@ class Url(str):
 		dom = urlparse.urlparse(self)
 		return dom.netloc.endswith(domain)
 
+	def short(self, length=45):
+		"""Short representation of url"""
+		sht = self[0:length]
+		if len(sht) < len(self):
+			sht += '...'
+		return sht
+
 # TEST CODE
 if __name__ == '__main__':
 	u = Url("http://google.com")

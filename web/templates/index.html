@@ -1,24 +1,45 @@
-<!doctype html>
-<html>
-	<head>
-		<title>Page Title Here</title>
-	</head>
-	<body>
+{% extends "base.html" %}
+{% block main %}
 
-		<h1> All Pages </h1>
-<ul>
-{% for doc in all %}
-<li> <a href="/url/{{loop.index - 1 }}">{{ doc.url }}</a></li>
-{% endfor %}
-</ul>
 
 		<h1> Missing Pages </h1>
 <ul>
 {% for doc in missing %}
-	<li> {{ doc.url }} </li>
+	<li> <a href="/url/{{loop.index - 1 }}">{{ doc.url.short() }}</a></li>
 {% endfor %}
 </ul>
 
 
-	</body>
-</html>
+
+		<h1> All Pages </h1>
+		<table>
+			<tr>
+				<th>URI</th>
+				<th>Status</th>
+				<th># Bad</th>
+			</tr>
+			{% for doc in all %}
+			<tr>
+				<td>
+					<a href="/url/{{loop.index - 1 }}">{{ doc.url.short(50) }}</a>
+				</td>
+				<td>
+					{% if doc.isMissing() %}
+						<span class="bad">
+						Missing
+						</span>
+					{% else %}
+						<span class="good">
+						Good
+						</span>
+					{% endif %}
+				</td>
+				<td>
+					{{ doc.cacheOutBad }}
+				</td>
+			</tr>
+
+			{% endfor %}
+			</table>
+
+{% endblock %}

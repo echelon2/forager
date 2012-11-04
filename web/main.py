@@ -1,4 +1,5 @@
 #!/usr/bin/env python 
+
 """
 This is the flask website that powers report viewing.
 """
@@ -26,6 +27,7 @@ Bad Brandon! Bad!
 
 CACHE_DIR = '../cache'
 dirfiles = glob.glob(CACHE_DIR + '/*obj')
+dirfiles.sort()
 
 DATABASE_FILE = dirfiles[-2]
 
@@ -33,8 +35,11 @@ f = open(DATABASE_FILE)
 db = pickle.loads(f.read())
 
 pagelist = []
+i = 0
 for url, doc in db.iteritems():
+	doc.cacheId = i
 	pagelist.append(doc)
+	i+= 1
 
 ALL_PAGES = tuple(pagelist)
 
@@ -42,6 +47,14 @@ errlist = []
 for doc in ALL_PAGES:
 	if doc.isMissing():
 		errlist.append(doc)
+
+# Generate page statistics
+for doc in ALL_PAGES:
+	outBad = 0
+	for d in doc.linksOut:
+		if d.isMissing():
+			outBad += 1
+	doc.cacheOutBad = outBad
 
 MISSING_PAGES = tuple(errlist)
 
@@ -54,25 +67,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def page_index():
-	global ALL_PAGES
-	global MISSING_PAGES
-
-	print len(ALL_PAGES)
-	print len(MISSING_PAGES)
-
+	global ALL_PAGES, MISSING_PAGES
 	return render_template('index.html', all=ALL_PAGES, missing=MISSING_PAGES)
 
 @app.route('/url/<urlId>')
 @app.route('/url/<urlId>/')
 def page_report(urlId):
 	global ALL_PAGES
-
-	urlId = int(urlId)
-
-	doc = ALL_PAGES[urlId]
-
-	return render_template('url.html', doc=doc)
-
+	return render_template('url.html', doc=ALL_PAGES[int(urlId)])
 
 if __name__ == "__main__":
     app.run()

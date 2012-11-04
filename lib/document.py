@@ -51,16 +51,11 @@ class Document(object):
 			self.httpStatus = r.status_code
 			self.mimeType = parseMime(r.headers['content-type'])
 			self._cachedRequest = r # Cache requests object (for now)
+
 		except KeyboardInterrupt:
 			raise KeyboardInterrupt
 
-		except requests.ConnectionError:
-			self.httpStatus = 0
-
-		except requests.HTTPError:
-			self.httpStatus = 0
-
-		except requests.RequestException:
+		except:
 			self.httpStatus = 0
 
 	def isMissing(self):

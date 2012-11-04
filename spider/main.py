@@ -18,7 +18,7 @@ CONFIGURATION
 """
 
 ROOT_URL = Url('http://spsu.edu')
-SAVE_EVERY = 20
+SAVE_EVERY = 7
 
 """
 DATA STRUCTURES
@@ -88,21 +88,22 @@ def main(url):
 	global DB
 	global RQ
 
-	RQ.push(url)
+	doc = Document(url)
+	RQ.push(doc)
 	#DB[url] = Document(url)
 
 	try:
 		count = 0
 		while not RQ.empty():
-			url = RQ.pop()
+			doc = RQ.pop()
+			url = doc.url
 
-			print "Url '%s' dequeued." % url
+			print "Url '%s' dequeued." % doc.url
 
 			# Don't fetch again if in database.
-			if url in DB:
+			if doc.url in DB:
 				continue
 
-			doc = Document(url)
 			DB[url] = doc
 
 			print "Downloading..."
@@ -113,12 +114,22 @@ def main(url):
 			if not url.isOnDomain('spsu.edu'):
 				continue
 
+			if doc.isMissing():
+				continue
+
 			urls = doc.getUrls()
 			print "%d urls parsed from page" % len(urls)
 
 			for u in urls:
 				if u not in DB:
-					RQ.push(u, 1) # TODO: priority heuristic
+					d = Document(u)
+					d.linksIn.append(doc)
+					RQ.push(d, 1) # TODO: priority heuristic
+				else:
+					d = DB[u]
+					d.linksIn.append(doc)
+
+				doc.linksOut.append(d)
 
 			count += 1
 			if count % SAVE_EVERY == 0:
